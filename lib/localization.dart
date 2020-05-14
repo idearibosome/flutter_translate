@@ -6,6 +6,9 @@ class Localization
     Map<dynamic, dynamic> _fallbackTranslations;
 
     Localization._();
+    Localization(this._translations) {
+        _fallbackTranslations = instance._fallbackTranslations ?? instance._translations;
+    }
 
     static Localization _instance;
     static Localization get instance => _instance ?? (_instance = Localization._());
