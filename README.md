@@ -1,3 +1,4 @@
+
 [<img src="https://github.com/bratan/flutter_translate/raw/master/resources/images/flutter_translate.png" />](https://github.com/bratan/flutter_translate/)
 
 [![Build Status](https://travis-ci.org/bratan/flutter_translate.svg)](https://travis-ci.org/bratan/flutter_translate)
@@ -20,7 +21,7 @@ It lets you define translations for your content in different languages and swit
 ## Features
 
 * Very easy to use
-* ```Mobile``` & ```Web``` support
+* ```Mobile```, ```Web``` and ```Desktop``` support
 * ```Pluralization``` and ```Duals``` support 
 * ```Static keys``` support with [flutter_translate_gen](https://github.com/bratan/flutter_translate/wiki/3.-Generating-statically-typed-localization-keys)
 * Supports both ``languageCode (en)`` and ``languageCode_countryCode (en_US)`` locale formats 
