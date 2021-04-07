@@ -4,20 +4,22 @@ import 'package:flutter_translate/src/constants/constants.dart';
 class Localization
 {
     Map<dynamic, dynamic> _translations;
+    Map<dynamic, dynamic> _fallbackTranslations;
 
     Localization._();
 
     static Localization _instance;
     static Localization get instance => _instance ?? (_instance = Localization._());
 
-    static void load(Map<dynamic, dynamic> translations)
+    static void load(Map<dynamic, dynamic> translations, {Map<dynamic, dynamic> fallback})
     {
         instance._translations = translations;
+        instance._fallbackTranslations = fallback;
     }
 
     String translate(String key, {Map<String, dynamic> args})
     {
-        var translation = _getTranslation(key, _translations);
+        var translation = _getTranslation(key, _translations, _fallbackTranslations);
 
         if (translation != null && args != null)
         {
@@ -30,7 +32,7 @@ class Localization
     String plural(String key, num value, {Map<String, dynamic> args})
     {
         var pluralKeyValue = _getPluralKeyValue(value);
-        var translation = _getPluralTranslation(key, pluralKeyValue, _translations);
+        var translation = _getPluralTranslation(key, pluralKeyValue, _translations, _fallbackTranslations);
 
         if(translation != null)
         {
@@ -66,24 +68,33 @@ class Localization
         return value;
     }
 
-    String _getTranslation(String key, Map<String, dynamic> map)
+    String _getTranslation(String key, Map<String, dynamic> map, Map<String, dynamic> fallbackMap)
     {
         List<String> keys = key.split('.');
 
         if (keys.length > 1)
         {
             var firstKey = keys.first;
+            var remainingKey = key.substring(key.indexOf('.') + 1);
 
-            if(map.containsKey(firstKey) && map[firstKey] is! String)
+            var value = map[firstKey];
+            if (value != null && value is! String)
             {
-                return _getTranslation(key.substring(key.indexOf('.') + 1), map[firstKey]);
+                return _getTranslation(remainingKey, value, fallbackMap != null ? fallbackMap[firstKey] : null);
+            } else if (fallbackMap != null)
+            {
+                var fallbackValue = fallbackMap[firstKey];
+                if (fallbackValue != null && fallbackValue is! String)
+                {
+                    return _getTranslation(remainingKey, fallbackValue, null);
+                }
             }
         }
 
-        return map[key];
+        return map[key] ?? (fallbackMap != null ? fallbackMap[key] : null);
     }
 
-    String _getPluralTranslation(String key, String valueKey, Map<String, dynamic> map)
+    String _getPluralTranslation(String key, String valueKey, Map<String, dynamic> map, Map<String, dynamic> fallbackMap)
     {
         List<String> keys = key.split('.');
 
@@ -93,10 +104,16 @@ class Localization
 
             if(map.containsKey(firstKey) && map[firstKey] is! String)
             {
-                return _getPluralTranslation(key.substring(key.indexOf('.') + 1), valueKey, map[firstKey]);
+                return _getPluralTranslation(key.substring(key.indexOf('.') + 1), valueKey, map[firstKey], fallbackMap != null ? fallbackMap[firstKey] : null);
+            }
+            else if (fallbackMap != null) {
+                if (fallbackMap.containsKey(firstKey) && fallbackMap[firstKey] is! String) {
+                    return _getPluralTranslation(key.substring(key.indexOf('.') + 1), valueKey, fallbackMap[firstKey], null);
+                }
             }
         }
 
-        return map[key][valueKey] ?? map[key][Constants.pluralElse];
+        if (map[key] != null) return map[key][valueKey] ?? map[key][Constants.pluralElse];
+        else return fallbackMap[key][valueKey] ?? fallbackMap[key][Constants.pluralElse];
     }
 }
