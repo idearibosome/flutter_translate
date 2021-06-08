@@ -3,21 +3,21 @@ import 'package:flutter_translate/src/constants/constants.dart';
 
 class Localization
 {
-    Map<dynamic, dynamic> _translations;
-    Map<dynamic, dynamic> _fallbackTranslations;
+    late Map<String, dynamic> _translations;
+    late Map<String, dynamic> _fallbackTranslations;
 
     Localization._();
 
-    static Localization _instance;
+    static Localization? _instance;
     static Localization get instance => _instance ?? (_instance = Localization._());
 
-    static void load(Map<dynamic, dynamic> translations, {Map<dynamic, dynamic> fallback})
+    static void load(Map<String, dynamic> translations, {Map<String, dynamic> fallback})
     {
         instance._translations = translations;
         instance._fallbackTranslations = fallback;
     }
 
-    String translate(String key, {Map<String, dynamic> args})
+    String translate(String key, {Map<String, dynamic>? args})
     {
         var translation = _getTranslation(key, _translations, _fallbackTranslations);
 
@@ -29,7 +29,7 @@ class Localization
         return translation ?? key;
     }
 
-    String plural(String key, num value, {Map<String, dynamic> args})
+    String plural(String key, num value, {Map<String, dynamic>? args})
     {
         var pluralKeyValue = _getPluralKeyValue(value);
         var translation = _getPluralTranslation(key, pluralKeyValue, _translations, _fallbackTranslations);
@@ -68,7 +68,7 @@ class Localization
         return value;
     }
 
-    String _getTranslation(String key, Map<String, dynamic> map, Map<String, dynamic> fallbackMap)
+    String? _getTranslation(String key, Map<String, dynamic> map, Map<String, dynamic> fallbackMap)
     {
         List<String> keys = key.split('.');
 
@@ -94,7 +94,7 @@ class Localization
         return map[key] ?? (fallbackMap != null ? fallbackMap[key] : null);
     }
 
-    String _getPluralTranslation(String key, String valueKey, Map<String, dynamic> map, Map<String, dynamic> fallbackMap)
+    String? _getPluralTranslation(String key, String valueKey, Map<String, dynamic> map, Map<String, dynamic> fallbackMap)
     {
         List<String> keys = key.split('.');
 
